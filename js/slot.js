@@ -20,6 +20,19 @@ function init() {
   var e3 = document.getElementById("e3").value = "12";
 }
 
+function test() {
+  var i;
+  var highestWin = 0;
+  for (i = 0; i < 10000; i++) {
+    play();
+    var win = Number(document.getElementById("latestWin").textContent);
+    if (win > highestWin) {
+      highestWin = win;
+    }
+  }
+  console.log(highestWin);
+}
+
 function changeBet() {
   var betSize = document.getElementById("betSize").value;
   if (betSize == 10) {
@@ -36,7 +49,10 @@ function changeBet() {
 }
 
 function play() {
-  remove_spin_credits()
+  if (check_balance() == false) {
+    return alert("Not enough credits");
+  }
+  remove_spin_credits();
   var values = ["9", "10", "11", "12", "13", "14", "T", "C", "S", "B"];
   var elements = ["a1", "a2", "a3", "b1", "b2", "b3", "c1", "c2", "c3", "d1", "d2", "d3", "e1", "e2", "e3"];
   var i;
@@ -85,37 +101,37 @@ function play() {
 
 function get_random() {
   // 559920
-  var value = Math.floor((Math.random() * 587341) + 1);
+  var value = Math.floor((Math.random() * 575535) + 1);
   var symbol;
   switch (true) {
-    case (value <= 101020):
+    case (value <= 98990):
         symbol = "9";
         break;
-    case (value > 101020 && value <= 181200):
+    case (value > 98990 && value <= 177558):
         symbol = "10";
         break;
-    case (value > 181200 && value <= 255633):
+    case (value > 177558 && value <= 250494):
         symbol = "11";
         break;
-    case (value > 255633 && value <= 325677):
+    case (value > 250494 && value <= 319130):
         symbol = "12";
         break;
-    case (value > 325677 && value <= 389361):
+    case (value > 319130 && value <= 481490):
         symbol = "13";
         break;
-    case (value > 389361 && value <= 448393):
+    case (value > 481490 && value <= 439379):
         symbol = "14";
         break;
-    case (value > 448393 && value <= 495282):
+    case (value > 439379 && value <= 485326):
         symbol = "T";
         break;
-    case (value > 495282 && value <= 532499):
+    case (value > 485326 && value <= 521795):
         symbol = "S";
         break;
-    case (value > 532499 && value <= 559920):
+    case (value > 521795 && value <= 548665):
         symbol = "C";
         break;
-    case (value > 559920 && value <= 587341):
+    case (value > 548665 && value <= 575535):
         symbol = "B";
         break;
     default:
@@ -145,41 +161,193 @@ function check_wins() {
   var e3 = document.getElementById("e3").value;
 
   // TODO extend win lines
-  var isWin = false;
-  var winSymbol;
+  var win1symbol;
+  var win2symbol;
+  var win3symbol;
+  var win4symbol;
+  var win5symbol;
+  var line1lenght = 0;
+  var line2lenght = 0;
+  var line3lenght = 0;
+  var line4lenght = 0;
+  var line5lenght = 0;
 
+  // Line 1
   if (a1 == b1 && b1 == c1) {
-    isWin = true;
+    win1symbol = a1;
+    if (c1 == d1 && d1 == e1) {
+      line1lenght = 5;
+    } else if (c1 == d1 && d1 != e1) {
+      line1lenght = 4;
+    } else {
+      line1lenght = 3;
+    }
   }
 
+  // Line 2
   if (a2 == b2 && b2 == c2) {
-    isWin = true;
+    win2symbol = a2;
+    if (c2 == d2 && d2 == e2) {
+      line2lenght = 5;
+    } else if (c2 == d2 && d2 != e2) {
+      line2lenght = 4;
+    } else {
+      line2lenght = 3;
+    }
   }
 
+  // Line 3
   if (a3 == b3 && b3 == c3) {
-    isWin = true;
+    win3symbol = a3;
+    if (c3 == d3 && d3 == e3) {
+      line3lenght = 5;
+    } else if (c3 == d3 && d3 != e3) {
+      line3lenght = 4;
+    } else {
+      line3lenght = 3;
+    }
   }
 
-  if (isWin == true) {
-    get_win(winSymbol);
-  } else {
-    get_loss();
+  // Line 4
+  if (a1 == b2 && b2 == c3) {
+    win4symbol = a1;
+    if (c3 == d2 && d2 == e1) {
+      line4lenght = 5;
+    } else if (c3 == d2 && d2 != e1) {
+      line4lenght = 4;
+    } else {
+      line4lenght = 3;
+    }
   }
 
+  // Line 5
+  if (a3 == b2 && b2 == c1) {
+    win5symbol = a3;
+    if (c1 == d2 && d2 == e1) {
+      line5lenght = 5;
+    } else if (c1 == d2 && d2 != e1) {
+      line5lenght = 4;
+    } else {
+      line5lenght = 3;
+    }
+  }
+
+  var total_win = 0;
+
+  if (line1lenght >= 3) {
+    total_win = total_win + get_win(win1symbol, line1lenght);
+  }
+
+  if (line2lenght >= 3) {
+    total_win = total_win + get_win(win2symbol, line2lenght);
+  }
+
+  if (line3lenght >= 3) {
+    total_win = total_win + get_win(win3symbol, line3lenght);
+  }
+
+  if (line4lenght >= 3) {
+    total_win = total_win + get_win(win4symbol, line4lenght);
+  }
+
+  if (line5lenght >= 3) {
+    total_win = total_win + get_win(win5symbol, line5lenght);
+  }
+
+  add_credits(total_win);
+  update_latest_win(total_win);
 }
 
-function get_win(symbol) {
-  // TODO different wins for different symbols
+function get_win(symbol, line_len) {
   var betSize = document.getElementById("betSize").value;
-  var amount = 10;
-  var win = amount * betSize;
-  add_credits(win);
-  update_latest_win(win);
-}
-
-function get_loss() {
-  var win = 0;
-  update_latest_win(win);
+  var win;
+  switch (true) {
+    case (symbol == "9" && line_len == 3):
+        win = betSize * 0.5;
+        break;
+    case (symbol == "9" && line_len == 4):
+        win = betSize * 1;
+        break;
+    case (symbol == "9" && line_len == 5):
+        win = betSize * 1.5;
+        break;
+    case (symbol == "10" && line_len == 3):
+        win = betSize * 2;
+        break;
+    case (symbol == "10" && line_len == 4):
+        win = betSize * 2.5;
+        break;
+    case (symbol == "10" && line_len == 5):
+        win = betSize * 3.5;
+        break;
+    case (symbol == "11" && line_len == 3):
+        win = betSize * 2.5;
+        break;
+    case (symbol == "11" && line_len == 4):
+        win = betSize * 3.5;
+        break;
+    case (symbol == "11" && line_len == 5):
+        win = betSize * 5;
+        break;
+    case (symbol == "12" && line_len == 3):
+        win = betSize * 3;
+        break;
+    case (symbol == "12" && line_len == 4):
+        win = betSize * 4.5;
+        break;
+    case (symbol == "12" && line_len == 5):
+        win = betSize * 6.5;
+        break;
+    case (symbol == "13" && line_len == 3):
+        win = betSize * 4;
+        break;
+    case (symbol == "13" && line_len == 4):
+        win = betSize * 6.5;
+        break;
+    case (symbol == "13" && line_len == 5):
+        win = betSize * 10;
+        break;
+    case (symbol == "14" && line_len == 3):
+        win = betSize * 5;
+        break;
+    case (symbol == "14" && line_len == 4):
+        win = betSize * 8.5;
+        break;
+    case (symbol == "14" && line_len == 5):
+        win = betSize * 15;
+        break;
+    case (symbol == "T" && line_len == 3):
+        win = betSize * 10;
+        break;
+    case (symbol == "T" && line_len == 4):
+        win = betSize * 20;
+        break;
+    case (symbol == "T" && line_len == 5):
+        win = betSize * 50;
+        break;
+    case (symbol == "S" && line_len == 3):
+        win = betSize * 20;
+        break;
+    case (symbol == "S" && line_len == 4):
+        win = betSize * 50;
+        break;
+    case (symbol == "S" && line_len == 5):
+        win = betSize * 150;
+        break;
+    case (symbol == "C" && line_len == 3):
+        win = betSize * 50;
+        break;
+    case (symbol == "C" && line_len == 4):
+        win = betSize * 180;
+        break;
+    case (symbol == "C" && line_len == 5):
+        win = betSize * 700;
+        break;
+    default:
+        win = 0;
+        break;
+  }
+  return win;
 }
 
 function add_credits(win_amount) {
@@ -202,7 +370,8 @@ function update_latest_win(win) {
 }
 
 function activate_bonus() {
-  alert("BONUS ACTIVATED!");
+  return 1;
+  // alert("BONUS ACTIVATED!");
 }
 
 function check_bonus(elements) {
@@ -216,4 +385,15 @@ function check_bonus(elements) {
     if (count == 3) {
       activate_bonus();
     }
+}
+
+function check_balance() {
+  var text = document.getElementById("balance").textContent;
+  var betSize = document.getElementById("betSize").value;
+  var balance = Number(text);
+  if (balance >= betSize) {
+    return true;
+  } else {
+    return false;
+  }
 }
